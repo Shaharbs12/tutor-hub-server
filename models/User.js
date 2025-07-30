@@ -54,6 +54,11 @@ const User = sequelize.define('User', {
     defaultValue: true,
     field: 'is_active'
   },
+  isAdmin: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    field: 'is_admin'
+  },
   languagePreference: {
     type: DataTypes.ENUM('en', 'he'),
     defaultValue: 'en',

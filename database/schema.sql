@@ -16,6 +16,7 @@ CREATE TABLE users (
     city VARCHAR(100),
     profile_image VARCHAR(255),
     is_active BOOLEAN DEFAULT TRUE,
+    is_admin BOOLEAN DEFAULT FALSE,
     language_preference ENUM('en', 'he') DEFAULT 'en',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

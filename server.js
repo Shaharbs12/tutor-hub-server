@@ -26,6 +26,7 @@ app.use('/api/subjects', require('./routes/subjects'));
 app.use('/api/tutors', require('./routes/tutors'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/profile', require('./routes/profile'));
+app.use('/api/admin', require('./routes/admin'));
 // app.use('/api/students', require('./routes/students'));
 
 // Root route

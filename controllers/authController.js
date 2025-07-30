@@ -4,10 +4,11 @@ const { User, Tutor, Student } = require('../models');
 // Generate JWT token
 const generateToken = (user) => {
   return jwt.sign(
-    { 
-      id: user.id, 
-      email: user.email, 
-      userType: user.userType 
+    {
+      id: user.id,
+      email: user.email,
+      userType: user.userType,
+      isAdmin: user.isAdmin
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRE || '7d' }
@@ -17,15 +18,15 @@ const generateToken = (user) => {
 // Register user
 const register = async (req, res) => {
   try {
-    const { 
-      email, 
-      password, 
-      firstName, 
-      lastName, 
-      userType, 
-      phone, 
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      userType,
+      phone,
       city,
-      languagePreference 
+      languagePreference
     } = req.body;
 
     // Check if user already exists
@@ -108,6 +109,7 @@ const login = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         userType: user.userType,
+        isAdmin: user.isAdmin,
         languagePreference: user.languagePreference,
         profileImage: user.profileImage
       }
@@ -126,7 +128,7 @@ const getCurrentUser = async (req, res) => {
 
     // Get user profile based on type
     if (user.userType === 'tutor') {
-      profile = await Tutor.findOne({ 
+      profile = await Tutor.findOne({
         where: { userId: user.id },
         include: [{ model: require('../models/Subject'), as: 'subjects' }]
       });

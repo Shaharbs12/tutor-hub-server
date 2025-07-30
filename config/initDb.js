@@ -87,6 +87,19 @@ const seedUsers = async () => {
   console.log('👥 Seeding users...');
   
   const users = [
+    // Admin
+    {
+      email: 'admin@tutorhub.com',
+      passwordHash: 'admin123', // Will be hashed by model hook
+      userType: 'admin',
+      firstName: 'Admin',
+      lastName: 'User',
+      phone: '000-0000000',
+      city: 'AdminCity',
+      languagePreference: 'en',
+      isActive: true,
+      isAdmin: true
+    },
     // Tutors
     {
       email: 'margarita@tutorhub.com',
