@@ -1,4 +1,5 @@
 const { Subject, Tutor, User } = require('../models');
+const { Op } = require('sequelize');
 
 // Get all subjects
 const getAllSubjects = async (req, res) => {
@@ -32,10 +33,10 @@ const getSubjectWithTutors = async (req, res) => {
     // Build where clause for tutors
     const tutorWhere = {};
     if (minRating) {
-      tutorWhere.rating = { [require('sequelize').Op.gte]: parseFloat(minRating) };
+      tutorWhere.rating = { [Op.gte]: parseFloat(minRating) };
     }
     if (maxRate) {
-      tutorWhere.hourlyRate = { [require('sequelize').Op.lte]: parseFloat(maxRate) };
+      tutorWhere.hourlyRate = { [Op.lte]: parseFloat(maxRate) };
     }
 
     const tutors = await Tutor.findAll({
@@ -88,11 +89,11 @@ const searchTutors = async (req, res) => {
     } = req.query;
 
     const whereClause = {
-      rating: { [require('sequelize').Op.gte]: parseFloat(minRating) }
+      rating: { [Op.gte]: parseFloat(minRating) }
     };
 
     if (maxRate) {
-      whereClause.hourlyRate = { [require('sequelize').Op.lte]: parseFloat(maxRate) };
+      whereClause.hourlyRate = { [Op.lte]: parseFloat(maxRate) };
     }
 
     const includeClause = [
@@ -100,7 +101,7 @@ const searchTutors = async (req, res) => {
         model: User,
         as: 'user',
         attributes: ['id', 'firstName', 'lastName', 'city', 'profileImage'],
-        where: city ? { city: { [require('sequelize').Op.like]: `%${city}%` } } : {}
+        where: city ? { city: { [Op.like]: `%${city}%` } } : {}
       }
     ];
 
@@ -109,9 +110,9 @@ const searchTutors = async (req, res) => {
         model: Subject,
         as: 'subjects',
         where: { 
-          [require('sequelize').Op.or]: [
-            { name: { [require('sequelize').Op.like]: `%${subject}%` } },
-            { nameHe: { [require('sequelize').Op.like]: `%${subject}%` } }
+          [Op.or]: [
+            { name: { [Op.like]: `%${subject}%` } },
+            { nameHe: { [Op.like]: `%${subject}%` } }
           ]
         },
         through: skillLevel ? { where: { skill_level: skillLevel } } : { attributes: ['skill_level'] }

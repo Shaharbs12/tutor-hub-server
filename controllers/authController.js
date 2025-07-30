@@ -26,7 +26,8 @@ const register = async (req, res) => {
       userType,
       phone,
       city,
-      languagePreference
+      languagePreference,
+      specialty // Add specialty field for tutors
     } = req.body;
 
     // Check if user already exists
@@ -49,7 +50,17 @@ const register = async (req, res) => {
 
     // Create profile based on user type
     if (userType === 'tutor') {
-      await Tutor.create({ userId: user.id });
+      const tutor = await Tutor.create({ userId: user.id });
+      
+      // Assign subject to tutor if specialty is provided
+      if (specialty) {
+        const { Subject } = require('../models');
+        const subject = await Subject.findByPk(specialty);
+        if (subject) {
+          await tutor.addSubject(subject);
+          console.log(`Assigned subject ${subject.name} to tutor ${user.firstName}`);
+        }
+      }
     } else if (userType === 'student') {
       await Student.create({ userId: user.id });
     }
