@@ -17,8 +17,8 @@ const initializeDatabase = async () => {
     await linkTutorSubjects();
     
     // Import and run additional seeders
-    const { seedReviews } = require('../../database/seed-reviews');
-    const { seedConversations } = require('../../database/seed-conversations');
+    const { seedReviews } = require('../database/seed-reviews');
+    const { seedConversations } = require('../database/seed-conversations');
     
     await seedReviews();
     await seedConversations();

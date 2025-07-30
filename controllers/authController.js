@@ -143,6 +143,7 @@ const getCurrentUser = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         userType: user.userType,
+        isAdmin: user.isAdmin,
         phone: user.phone,
         city: user.city,
         profileImage: user.profileImage,

@@ -30,6 +30,21 @@ Subject.belongsToMany(Tutor, {
   as: 'tutors'
 });
 
+// Many-to-many relationship between Students and Subjects (preferred subjects)
+Student.belongsToMany(Subject, { 
+  through: 'student_subjects', 
+  foreignKey: 'student_id',
+  otherKey: 'subject_id',
+  as: 'preferredSubjects'
+});
+
+Subject.belongsToMany(Student, { 
+  through: 'student_subjects', 
+  foreignKey: 'subject_id',
+  otherKey: 'student_id',
+  as: 'students'
+});
+
 // Review relationships
 Tutor.hasMany(Review, { foreignKey: 'tutorId', as: 'reviews' });
 Review.belongsTo(Tutor, { foreignKey: 'tutorId', as: 'tutor' });

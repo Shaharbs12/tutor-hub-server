@@ -22,7 +22,7 @@ const User = sequelize.define('User', {
     field: 'password_hash'
   },
   userType: {
-    type: DataTypes.ENUM('student', 'tutor'),
+    type: DataTypes.ENUM('student', 'tutor', 'admin'),
     allowNull: false,
     field: 'user_type'
   },

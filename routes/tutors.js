@@ -1,55 +1,49 @@
 const express = require('express');
 const router = express.Router();
+const { Op } = require('sequelize');
 const { Tutor, User, Subject } = require('../models');
 const { auth, requireUserType } = require('../middleware/auth');
 const { validateTutorProfile } = require('../middleware/validation');
+
+// @desc    Test route
+// @route   GET /api/tutors/test
+// @access  Public
+router.get('/test', (req, res) => {
+  res.json({ message: 'Tutors route is working' });
+});
 
 // @desc    Get all tutors
 // @route   GET /api/tutors
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const { limit = 10, offset = 0, subject, city, minRating = 0 } = req.query;
-
-    const whereClause = {
-      rating: { [require('sequelize').Op.gte]: parseFloat(minRating) }
-    };
-
-    const includeClause = [
-      {
-        model: User,
-        as: 'user',
-        attributes: ['id', 'firstName', 'lastName', 'city', 'profileImage'],
-        where: city ? { city: { [require('sequelize').Op.like]: `%${city}%` } } : {}
-      },
-      {
-        model: Subject,
-        as: 'subjects',
-        through: { attributes: ['skill_level'] }
-      }
-    ];
-
-    const tutors = await Tutor.findAndCountAll({
-      where: whereClause,
-      include: includeClause,
-      limit: parseInt(limit),
-      offset: parseInt(offset),
-      order: [['rating', 'DESC']],
-      distinct: true
+    console.log('Fetching tutors...');
+    
+    // Simple query without complex includes first
+    const tutors = await Tutor.findAll({
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'firstName', 'lastName', 'city']
+        }
+      ]
     });
 
+    console.log(`Found ${tutors.length} tutors`);
+    
     res.json({
       message: 'Tutors retrieved successfully',
-      tutors: tutors.rows,
+      tutors: tutors,
       pagination: {
-        limit: parseInt(limit),
-        offset: parseInt(offset),
-        total: tutors.count
+        limit: 10,
+        offset: 0,
+        total: tutors.length
       }
     });
   } catch (error) {
     console.error('Get tutors error:', error);
-    res.status(500).json({ error: 'Failed to retrieve tutors' });
+    res.status(500).json({ error: 'Failed to retrieve tutors', details: error.message });
   }
 });
 

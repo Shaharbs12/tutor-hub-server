@@ -24,6 +24,7 @@ app.use(express.static(path.join(__dirname, '../client')));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/subjects', require('./routes/subjects'));
 app.use('/api/tutors', require('./routes/tutors'));
+app.use('/api/students', require('./routes/students'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/admin', require('./routes/admin'));
