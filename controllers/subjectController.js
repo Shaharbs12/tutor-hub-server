@@ -51,7 +51,7 @@ const getSubjectWithTutors = async (req, res) => {
           model: Subject,
           as: 'subjects',
           where: { id },
-          through: { attributes: ['skill_level'] }
+          through: { attributes: [] } // Remove skill_level since column doesn't exist
         }
       ],
       limit: parseInt(limit),
@@ -115,7 +115,7 @@ const searchTutors = async (req, res) => {
             { nameHe: { [Op.like]: `%${subject}%` } }
           ]
         },
-        through: skillLevel ? { where: { skill_level: skillLevel } } : { attributes: ['skill_level'] }
+        through: skillLevel ? { where: { skill_level: skillLevel } } : { attributes: [] }
       });
     }
 

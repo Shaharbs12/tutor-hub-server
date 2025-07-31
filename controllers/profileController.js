@@ -8,7 +8,13 @@ const getProfile = async (req, res) => {
     
     let profile = await User.findByPk(userId, {
       attributes: { exclude: ['password'] },
-      include: []
+      include: [
+        {
+          model: Subject,
+          as: 'subject',
+          attributes: ['id', 'name', 'icon', 'color']
+        }
+      ]
     });
 
     if (!profile) {
@@ -296,6 +302,128 @@ const updateStudentPreferences = async (req, res) => {
   }
 };
 
+// Add subject to student preferences
+const addStudentSubject = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { subjectId, proficiencyLevel = 'beginner', learningGoal } = req.body;
+
+    if (req.user.userType !== 'student') {
+      return res.status(403).json({ error: 'Only students can add subjects' });
+    }
+
+    const student = await Student.findOne({ where: { userId } });
+    if (!student) {
+      return res.status(404).json({ error: 'Student profile not found' });
+    }
+
+    // Check if subject exists
+    const subject = await Subject.findByPk(subjectId);
+    if (!subject) {
+      return res.status(404).json({ error: 'Subject not found' });
+    }
+
+    // Add subject to student preferences
+    await student.addPreferredSubject(subject, {
+      through: {
+        proficiencyLevel,
+        learningGoal
+      }
+    });
+
+    res.json({
+      message: 'Subject added to preferences successfully',
+      subject: {
+        id: subject.id,
+        name: subject.name,
+        icon: subject.icon,
+        proficiencyLevel,
+        learningGoal
+      }
+    });
+  } catch (error) {
+    console.error('Add student subject error:', error);
+    res.status(500).json({ error: 'Failed to add subject to preferences' });
+  }
+};
+
+// Remove subject from student preferences
+const removeStudentSubject = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { subjectId } = req.params;
+
+    if (req.user.userType !== 'student') {
+      return res.status(403).json({ error: 'Only students can remove subjects' });
+    }
+
+    const student = await Student.findOne({ where: { userId } });
+    if (!student) {
+      return res.status(404).json({ error: 'Student profile not found' });
+    }
+
+    // Check if subject exists
+    const subject = await Subject.findByPk(subjectId);
+    if (!subject) {
+      return res.status(404).json({ error: 'Subject not found' });
+    }
+
+    // Remove subject from student preferences
+    await student.removePreferredSubject(subject);
+
+    res.json({
+      message: 'Subject removed from preferences successfully'
+    });
+  } catch (error) {
+    console.error('Remove student subject error:', error);
+    res.status(500).json({ error: 'Failed to remove subject from preferences' });
+  }
+};
+
+// Update user's primary subject
+const updateUserSubject = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { subjectId } = req.body;
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if subject exists if provided
+    if (subjectId) {
+      const subject = await Subject.findByPk(subjectId);
+      if (!subject) {
+        return res.status(404).json({ error: 'Subject not found' });
+      }
+    }
+
+    // Update user's subject
+    await user.update({ subjectId: subjectId || null });
+
+    // Return updated profile with subject
+    const updatedProfile = await User.findByPk(userId, {
+      attributes: { exclude: ['password'] },
+      include: [
+        {
+          model: Subject,
+          as: 'subject',
+          attributes: ['id', 'name', 'icon', 'color']
+        }
+      ]
+    });
+
+    res.json({
+      message: 'Subject updated successfully',
+      profile: updatedProfile
+    });
+  } catch (error) {
+    console.error('Update user subject error:', error);
+    res.status(500).json({ error: 'Failed to update subject' });
+  }
+};
+
 module.exports = {
   getProfile,
   updateProfile,
@@ -303,5 +431,8 @@ module.exports = {
   getTutorSchedule,
   updateTutorSchedule,
   getStudentPreferences,
-  updateStudentPreferences
+  updateStudentPreferences,
+  addStudentSubject,
+  removeStudentSubject,
+  updateUserSubject
 };

@@ -15,6 +15,10 @@ Tutor.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 User.hasOne(Student, { foreignKey: 'userId', as: 'studentProfile' });
 Student.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
+// User subject relationship
+User.belongsTo(Subject, { foreignKey: 'subjectId', as: 'subject' });
+Subject.hasMany(User, { foreignKey: 'subjectId', as: 'users' });
+
 // Many-to-many relationship between Tutors and Subjects
 Tutor.belongsToMany(Subject, { 
   through: 'tutor_subjects', 

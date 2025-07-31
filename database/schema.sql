@@ -15,11 +15,13 @@ CREATE TABLE users (
     phone VARCHAR(20),
     city VARCHAR(100),
     profile_image VARCHAR(255),
+    subject_id INT,
     is_active BOOLEAN DEFAULT TRUE,
     is_admin BOOLEAN DEFAULT FALSE,
     language_preference ENUM('en', 'he') DEFAULT 'en',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE SET NULL
 );
 
 -- Subjects table
@@ -72,6 +74,19 @@ CREATE TABLE tutor_subjects (
     FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE,
     FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
     UNIQUE KEY unique_tutor_subject (tutor_id, subject_id)
+);
+
+-- Student subject preferences (many-to-many relationship)
+CREATE TABLE student_subjects (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    proficiency_level ENUM('beginner', 'intermediate', 'advanced') DEFAULT 'beginner',
+    learning_goal TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_student_subject (student_id, subject_id)
 );
 
 -- Chat conversations

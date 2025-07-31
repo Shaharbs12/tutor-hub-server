@@ -32,4 +32,15 @@ const Student = sequelize.define('Student', {
   tableName: 'students'
 });
 
+// Define associations
+Student.associate = (models) => {
+  Student.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+  Student.belongsToMany(models.Subject, {
+    through: 'student_subjects',
+    foreignKey: 'student_id',
+    otherKey: 'subject_id',
+    as: 'subjects'
+  });
+};
+
 module.exports = Student;

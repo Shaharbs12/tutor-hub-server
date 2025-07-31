@@ -49,6 +49,11 @@ const User = sequelize.define('User', {
     allowNull: true,
     field: 'profile_image'
   },
+  subjectId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'subject_id'
+  },
   isActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,

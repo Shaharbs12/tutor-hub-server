@@ -7,7 +7,10 @@ const {
   getTutorSchedule,
   updateTutorSchedule,
   getStudentPreferences,
-  updateStudentPreferences
+  updateStudentPreferences,
+  addStudentSubject,
+  removeStudentSubject,
+  updateUserSubject
 } = require('../controllers/profileController');
 const { auth } = require('../middleware/auth');
 const { body } = require('express-validator');
@@ -90,5 +93,20 @@ router.get('/preferences', auth, getStudentPreferences);
 // @route   PUT /api/profile/preferences
 // @access  Private (Students only)
 router.put('/preferences', auth, updateStudentPreferences);
+
+// @desc    Add subject to student preferences
+// @route   POST /api/profile/subjects
+// @access  Private (Students only)
+router.post('/subjects', auth, addStudentSubject);
+
+// @desc    Remove subject from student preferences
+// @route   DELETE /api/profile/subjects/:subjectId
+// @access  Private (Students only)
+router.delete('/subjects/:subjectId', auth, removeStudentSubject);
+
+// @desc    Update user's primary subject
+// @route   PUT /api/profile/subject
+// @access  Private
+router.put('/subject', auth, updateUserSubject);
 
 module.exports = router;
