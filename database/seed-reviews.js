@@ -1,4 +1,4 @@
-const { User, Tutor, Subject, Review } = require('../server/models');
+const { User, Tutor, Subject, Review } = require('../models');
 
 const seedReviews = async () => {
   console.log('⭐ Seeding reviews...');
