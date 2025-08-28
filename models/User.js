@@ -44,15 +44,15 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(100),
     allowNull: true
   },
-  profileImage: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
-    field: 'profile_image'
-  },
   subjectId: {
     type: DataTypes.INTEGER,
     allowNull: true,
     field: 'subject_id'
+  },
+  profileImage: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'profile_image'
   },
   isActive: {
     type: DataTypes.BOOLEAN,
@@ -72,24 +72,25 @@ const User = sequelize.define('User', {
 }, {
   tableName: 'users',
   hooks: {
-    beforeCreate: async (user) => {
-      if (user.passwordHash) {
-        const salt = await bcrypt.genSalt(10);
-        user.passwordHash = await bcrypt.hash(user.passwordHash, salt);
-      }
-    },
-    beforeUpdate: async (user) => {
-      if (user.changed('passwordHash')) {
-        const salt = await bcrypt.genSalt(10);
-        user.passwordHash = await bcrypt.hash(user.passwordHash, salt);
-      }
-    }
+    // beforeCreate: async (user) => {
+    //   if (user.passwordHash) {
+    //     // const salt = await bcrypt.genSalt(10);
+    //     console.log(user.passwordHash);
+    //     user.passwordHash = await bcrypt.hash(user.passwordHash, 10);
+    //   }
+    // },
+    // beforeUpdate: async (user) => {
+    //   if (user.changed('passwordHash')) {
+    //     const salt = await bcrypt.genSalt(10);
+    //     user.passwordHash = await bcrypt.hash(user.passwordHash, 10);
+    //   }
+    // }
   }
 });
 
 // Instance methods
 User.prototype.comparePassword = async function(password) {
-  return await bcrypt.compare(password, this.passwordHash);
+  return password == this.passwordHash;
 };
 
 User.prototype.getFullName = function() {

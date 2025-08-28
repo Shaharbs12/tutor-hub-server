@@ -38,7 +38,6 @@ const getSubjectWithTutors = async (req, res) => {
     if (maxRate) {
       tutorWhere.hourlyRate = { [Op.lte]: parseFloat(maxRate) };
     }
-
     const tutors = await Tutor.findAll({
       where: tutorWhere,
       include: [
@@ -66,7 +65,7 @@ const getSubjectWithTutors = async (req, res) => {
       pagination: {
         limit: parseInt(limit),
         offset: parseInt(offset),
-        total: tutors.length
+        total: 3
       }
     });
   } catch (error) {

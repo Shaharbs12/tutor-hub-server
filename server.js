@@ -3,14 +3,10 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-// Import database connection
 const { connectDB } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Connect to database
-connectDB();
 
 // Middleware
 app.use(cors());
@@ -28,7 +24,6 @@ app.use('/api/students', require('./routes/students'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/admin', require('./routes/admin'));
-// app.use('/api/students', require('./routes/students'));
 
 // Root route
 app.get('/', (req, res) => {
@@ -55,8 +50,18 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Tutor Hub server running on port ${PORT}`);
-  console.log(`📱 Client served at http://localhost:${PORT}`);
-  console.log(`🔗 API health check: http://localhost:${PORT}/api/health`);
-});
+// Start server AFTER DB connection
+const startServer = async () => {
+  try {
+    await connectDB(); // Initialize SQLite and sync tables
+    app.listen(PORT, () => {
+      console.log(`🚀 Tutor Hub server running on port ${PORT}`);
+      console.log(`📱 Client served at http://localhost:${PORT}`);
+      console.log(`🔗 API health check: http://localhost:${PORT}/api/health`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to connect to the database. Server not started.', error);
+  }
+};
+
+startServer();
