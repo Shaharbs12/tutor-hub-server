@@ -36,6 +36,7 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'User already exists with this email' });
     }
 
+    console.log('password', password);
     // Create user
     const user = await User.create({
       email,
@@ -90,26 +91,37 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('Login attempt for:', email);
 
     // Find user
     const user = await User.findOne({ where: { email } });
     if (!user) {
+      console.log('User not found:', email);
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
+    console.log('User found:', user.email, 'User type:', user.userType);
+
     // Check if account is active
     if (!user.isActive) {
+      console.log('Account is deactivated:', email);
       return res.status(401).json({ error: 'Account is deactivated' });
     }
 
     // Verify password
+    console.log('Verifying password...');
     const isPasswordValid = await user.comparePassword(password);
+    console.log('Password valid:', isPasswordValid);
+    
     if (!isPasswordValid) {
+      console.log('Invalid password for:', email);
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
     // Generate token
+    console.log('Generating token...');
     const token = generateToken(user);
+    console.log('Token generated successfully');
 
     res.json({
       message: 'Login successful',

@@ -1,37 +1,39 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,  // database name
-  process.env.DB_USER,      // username
-  process.env.DB_PASS, // password
-  {
-    host: process.env.MYSQL_HOST || 'localhost',
-    dialect: 'mysql',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    },
-    define: {
-      timestamps: true,
-      underscored: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at'
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: './database.sqlite',
+  logging: (sql, queryObject) => {
+    // Log the final query with actual values
+    if (queryObject && queryObject.bind) {
+      let finalQuery = sql;
+      queryObject.bind.forEach((value, index) => {
+        const placeholder = `$${index + 1}`;
+        const escapedValue = typeof value === 'string' ? `'${value.replace(/'/g, "''")}'` : value;
+        finalQuery = finalQuery.replace(placeholder, escapedValue);
+      });
+      console.log('🔍 Final Query:', finalQuery);
+    } else {
+      console.log('🔍 Query:', sql);
     }
+  },
+  define: {
+    timestamps: true,
+    underscored: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   }
-);
+});
 
 // Test database connection
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log('✅ Database connected successfully (MySQL)');
+    console.log('✅ Database connected successfully (SQLite)');
     
     if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ alter: true });
+      await sequelize.sync({ force: false });
       console.log('📊 Database synchronized');
     }
   } catch (error) {

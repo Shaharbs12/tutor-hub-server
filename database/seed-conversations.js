@@ -1,4 +1,4 @@
-const { User, Tutor, Subject, Conversation, Message } = require('../server/models');
+const { User, Tutor, Subject, Conversation, Message } = require('../models');
 
 const seedConversations = async () => {
   console.log('💬 Seeding conversations and messages...');

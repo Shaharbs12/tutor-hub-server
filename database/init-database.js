@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Database initialization script
-const { initializeDatabase } = require('../server/config/initDb');
+const { initializeDatabase } = require('../config/initDb');
 
 async function main() {
   console.log('🚀 Starting database initialization...\n');

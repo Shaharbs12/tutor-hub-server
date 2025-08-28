@@ -1,13 +1,18 @@
 const express = require('express');
 const cors = require('cors');
-//const path = require('path');
+const path = require('path');
 require('dotenv').config();
+console.log('Environment variables loaded:');
+console.log('PORT:', process.env.PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'SET' : 'NOT SET');
+console.log('JWT_EXPIRE:', process.env.JWT_EXPIRE);
 
 // Import database connection
 const { connectDB } = require('./config/database');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Connect to database
 connectDB();
@@ -16,9 +21,6 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve static files from client directory
-//app.use(express.static(path.join(__dirname, '../client')));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -30,10 +32,13 @@ app.use('/api/profile', require('./routes/profile'));
 app.use('/api/admin', require('./routes/admin'));
 // app.use('/api/students', require('./routes/students'));
 
-// Root route
-//app.get('/', (req, res) => {
-//  res.sendFile(path.join(__dirname, '../client/index.html'));
-//});
+// Serve static files from client directory
+app.use(express.static(path.join(__dirname, '../client')));
+
+// Root route - must be after API routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/index.html'));
+});
 
 // API health check
 app.get('/api/health', (req, res) => {
@@ -43,6 +48,17 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// API health check
+app.get('/auth/login', (req, res) => {
+  console.log('auth/login');
+  res.json({ 
+    status: 'OK', 
+    message: 'Tutor Hub API is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
 
 // 404 handler
 app.use('*', (req, res) => {
